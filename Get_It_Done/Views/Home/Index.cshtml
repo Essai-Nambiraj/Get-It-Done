@@ -1,0 +1,111 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@model TaskItem;
+
+<link href="~\css\site.css" rel="stylesheet" />
+
+<div class="container">
+    <div class="header">
+        <h1 class="heading display-4">GET IT DONE !!!!</h1>
+
+        <div class="top-links">
+            <a href="#">GitHub</a>
+            <a href="#">About</a>
+        </div>
+    </div>
+    
+    <form method="post" asp-action="AddTask" class="input-section">
+        
+            <input class="title form-control w-50" type="text" name="title" placeholder="Enter Task Ta Da..." required /><br />
+            <label class="priority-label">                          
+                Priority
+            </label>
+            <input type="checkbox" asp-for="IsPriority" name="isPriority" />
+           
+            <!--Using html helper tag:  @Html.CheckBoxFor(m => m.IsPriority)-->
+            
+            <input class="deadline w-25" type="date" name="deadline" /><br /><br />
+            <input class="addBtn" type="submit" id="addBtn" value="Add"/>        
+    </form>
+    <hr />
+
+    <!--Middle Sections-->
+    <div class="main-section">
+       <!-- @* <div class="task-container">
+            <input type="text" placeholder="Motivate Yourself" />
+            <input class="btn btn-success" type="submit" value="Add" />
+        </div> *@-->
+
+        @if(Model.Tasks != null && Model.Tasks.Count > 0)
+        {
+            @foreach (var task in Model.Tasks)
+            {
+                <div class="task-item">
+                    <form asp-action="ToggleComplete" method="post"">
+                        <input type="hidden" name="id" value="@task.TaskId" />
+                        <input type="checkbox" onchange="this.form.submit()" @(task.IsCompleted ? "Checked": "") />
+                    </form>
+                    
+                    <div class="task-text">
+                        <span style="@(task.IsCompleted ? "Completed" : "")">@task.Task</span>
+
+                        @if (task.IsPriority)
+                        {
+                            <span class="priority">🔥</span>
+                            <strong>(Priority)</strong>
+                        }
+
+                        @if (task.DeadLine != null)
+                        {
+                            <small>DeadLine: @task.DeadLine.Value.ToShortDateString()</small>
+                        }
+
+                    </div>
+                    
+
+                    <div class="task-action">
+                        <form asp-action="UpdateTask" method="post">
+                            <a asp-action="UpdateTask" asp-route-id="@task.TaskId">Edit</a>
+                        </form>
+
+                        <form asp-action="DeleteTask" method="post">
+                            <input type="hidden" name="id" value="@task.TaskId" />
+                            <button type="submit">X</button>
+                        </form>
+                    </div>
+                    
+                </div>
+            }
+        }
+        else
+        {
+            <p class="empty">No Task Available</p>
+        }
+
+        <div class="task-footer">
+            @Model.Tasks.Count(t => !t.IsCompleted) items remaining.
+        </div>       
+    </div>
+
+</div>
+
+<div class="side-tabs">
+    <h3>Open</h3>
+    <a href="?filter=All">All</a>
+
+    @if (Model.Tasks.Count > 0)
+    {
+        <a href="?filter=Priority"> Priority </a>
+        <a href="?filter=Pending"> Pending </a>
+        <a href="?filter=Completed">Completed</a>
+        <a href="#">Finish All</a>
+
+        <a href="?filter=Trash"> Trash </a>
+        <a href="#">Delete All</a>
+
+        <a href="#">Export</a>
+    }
+    <a href="#">Import</a>
+</div>
+

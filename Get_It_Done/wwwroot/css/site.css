@@ -1,0 +1,172 @@
+*{
+    transition: all 0.24s ease;
+}
+
+body {
+    background: rgb(64 71 86);
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/*Container*/
+.container{
+    max-width: 900px;
+    margin:auto;
+    padding: 20px;
+}
+
+/*Header*/
+.header{
+    display: flex;
+    justify-content:space-between;
+    align-items: center;
+}
+
+.heading {
+    font-size: 40px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.top-links a{
+    margin-left: 10px;
+    text-decoration: none;
+}
+
+/*Input Row*/
+.input-section{
+    display: flex;
+    border: 2px solid #333;
+    border-radius: 9px;
+    overflow: hidden;
+    gap:10px;
+    margin: 20px 0;
+
+}
+.priority-label {
+    margin-top: 11px;
+    font-size: 20px;
+    color: rgb(88 196 220 );
+}
+.input-section input[type="text"], input[type="date"] {
+    flex: 1;
+    padding: 10px;
+    border-radius: 9px;
+    border: 4px solid #ccc;
+    outline: none;
+}
+
+.input-section input[type="submit"] {
+    background: rgb();
+    border: none;
+    padding: 10px 20px;
+    border-radius: 9px;
+    cursor: pointer;
+}
+
+/*main section*/
+.main-section {
+    margin-top: 20px;
+    background: white;
+    border: 2px solid #333;
+    border-radius: 9px;
+    padding: 10px;
+    text-align: left;
+    box-shadow: 8px 8px 18px 0 rgb(88 196 220 );
+}
+
+/*Task Container*/
+
+/*Task HEader*/
+.task-header{
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+}
+
+/*Task item*/
+.task-item{
+    display:block;
+    align-items: center;
+    justify-content: space-between;
+    border: 2px solid #333;
+    background: #fafafa;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 9px;
+    animation: fadeInUp 0.8s ease;
+}
+
+.task-item:hover{
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+@keyframes fadeInUp{
+    from{
+        opacity:0;
+        transform: translateY(-20px);
+    }
+    to{
+        opacity:1;
+        transform: translateY(0)
+    }
+}
+
+/*Completed*/
+.task-item.Completed {
+    background: #d4f5d4;
+    text-decoration: line-through;
+}
+
+/*Text*/
+.task-text{
+    font-family:'Times New Roman', Times, serif;
+    font-weight: bold;
+    font-size: 23px;
+    flex:1;
+    margin-left: 10px;
+}
+
+/*Priority*/
+.priority{
+    color: red;
+    margin-left: 5px;
+}
+
+/*Actions*/
+.task-action{
+    display: flex;
+    gap: 5px;
+}
+
+.side-tabs {
+    position: absolute;
+   
+    width: 180px;
+    right: 40px;
+    top: 230px;
+    background: #e0f7fa;
+    padding: 10px;
+    border-radius: 10px;
+    border: 2px solid rgb(88 196 220 );
+    box-shadow: 8px 8px 18px 0 rgb(88 196 220 );
+}
+
+.side-tabs a{
+    display: block;
+    margin: 4px 0;
+    text-decoration: none;
+}
+
+/*Footer*/
+.task-footer{
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.empty{
+    text-align: center;
+    color: gray;
+}
+
