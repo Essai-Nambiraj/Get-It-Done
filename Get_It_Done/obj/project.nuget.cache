@@ -1,8 +1,17 @@
 {
   "version": 2,
-  "dgSpecHash": "4HcvroZFM5M=",
+  "dgSpecHash": "hNi/gcNd9rc=",
   "success": true,
   "projectFilePath": "C:\\Users\\NA40133890\\source\\repos\\Get_It_Done\\Get_It_Done\\Get_It_Done.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\NA40133890\\.nuget\\packages\\bouncycastle.cryptography\\2.6.2\\bouncycastle.cryptography.2.6.2.nupkg.sha512",
+    "C:\\Users\\NA40133890\\.nuget\\packages\\itext\\9.6.0\\itext.9.6.0.nupkg.sha512",
+    "C:\\Users\\NA40133890\\.nuget\\packages\\itext.bouncy-castle-adapter\\9.6.0\\itext.bouncy-castle-adapter.9.6.0.nupkg.sha512",
+    "C:\\Users\\NA40133890\\.nuget\\packages\\itext.commons\\9.6.0\\itext.commons.9.6.0.nupkg.sha512",
+    "C:\\Users\\NA40133890\\.nuget\\packages\\itext7\\9.6.0\\itext7.9.6.0.nupkg.sha512",
+    "C:\\Users\\NA40133890\\.nuget\\packages\\itext7.bouncy-castle-adapter\\9.6.0\\itext7.bouncy-castle-adapter.9.6.0.nupkg.sha512",
+    "C:\\Users\\NA40133890\\.nuget\\packages\\microsoft.dotnet.platformabstractions\\1.1.0\\microsoft.dotnet.platformabstractions.1.1.0.nupkg.sha512",
+    "C:\\Users\\NA40133890\\.nuget\\packages\\microsoft.extensions.dependencymodel\\10.0.2\\microsoft.extensions.dependencymodel.10.0.2.nupkg.sha512"
+  ],
   "logs": []
 }

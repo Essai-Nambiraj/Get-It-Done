@@ -1,6 +1,9 @@
 using System.Diagnostics;
 using Get_It_Done.Models;
 using Microsoft.AspNetCore.Mvc;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
 
 namespace Get_It_Done.Controllers
 {
@@ -19,7 +22,7 @@ namespace Get_It_Done.Controllers
                         "Completed" => t.IsCompleted && !t.IsDeleted,
                         "Pending" => !t.IsCompleted && !t.IsDeleted,
                         "Priority" => t.IsPriority && !t.IsDeleted,
-                        "Trash" => t.IsDeleted,
+                        "Trash" => t.IsDeleted,                       
                         _ => !t.IsDeleted
                     };
                 })
@@ -88,6 +91,90 @@ namespace Get_It_Done.Controllers
             }
 
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult DeleteAll()
+        {
+            foreach(var task in tasks)
+            {
+                task.IsDeleteAll = true;
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult ClearCompleted()
+        {
+            foreach(var task in tasks.Where(t=> t.IsCompleted).ToList())
+            {
+                task.IsDeleted = true;
+            }
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult FinishAll()
+        {
+            foreach(var task in tasks)
+            {
+                task.IsCompleted = true;
+            }
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult ExportJson()
+        {
+            var data = tasks.Where(t => !t.IsDeleted).ToList();
+
+            var json = System.Text.Json.JsonSerializer.Serialize(data);
+
+            return File(System.Text.Encoding.UTF8.GetBytes(json), "application/json", "tasks.json");
+        }
+
+        [HttpPost]
+        public IActionResult ExportCsv()
+        {
+            var data = tasks.Where(t => !t.IsDeleted).ToList();
+
+            var csv = new System.Text.StringBuilder();
+
+            csv.AppendLine("ID, Task, IsCompleted, IsPriority, DeadLine");
+
+            foreach(var d in data)
+            {
+                csv.AppendLine($"{d.TaskId}, {d.Task}, {d.IsCompleted}, {d.IsPriority}, {d.DeadLine}");
+            }
+
+            return File(System.Text.Encoding.UTF8.GetBytes(csv.ToString()), "text/csv", "tasks.csv");
+        }
+
+        [HttpPost]
+        public IActionResult ExportPdf()
+        {
+            var data = tasks.Where(t => !t.IsDeleted).ToList();
+
+            using(var stream = new MemoryStream())
+            {
+                using (var writer = new PdfWriter(stream))
+                {
+                    using (var pdf = new PdfDocument(writer))
+                    {
+                        var document = new Document(pdf);
+                        {
+                            document.Add(new Paragraph("Task List"));
+                            foreach (var t in data)
+                            {
+                                document.Add(new Paragraph(
+                                    $"{t.Task} | Completed: {t.IsCompleted} | Priority: {t.IsPriority} | Deadline: {t.DeadLine}"));
+                            }
+                        }
+                    }
+                }                    
+                return File(stream.ToArray(), "application/pdf", "tasks.pdf");
+            }
         }
     }
 }

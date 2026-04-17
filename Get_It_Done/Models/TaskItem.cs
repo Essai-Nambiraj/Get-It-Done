@@ -15,5 +15,10 @@
         public List<TaskItem> Tasks { get; set; }
 
         public string CurrentFilter { get; set; }   //All Completed, Pending, Priority, Trash
+
+        public bool IsCompleteAll { get; set; }
+        public bool IsDeleteAll { get; set; }
+
+
     }
 }

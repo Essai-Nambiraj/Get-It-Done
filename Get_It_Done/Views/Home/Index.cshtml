@@ -7,7 +7,7 @@
 
 <div class="container">
     <div class="header">
-        <h1 class="heading display-4">GET IT DONE !!!!</h1>
+        <h1 class="heading">GET IT DONE !!!!</h1>
 
         <div class="top-links">
             <a href="#">GitHub</a>
@@ -32,10 +32,9 @@
 
     <!--Middle Sections-->
     <div class="main-section">
-       <!-- @* <div class="task-container">
-            <input type="text" placeholder="Motivate Yourself" />
-            <input class="btn btn-success" type="submit" value="Add" />
-        </div> *@-->
+        
+        <input type="text" class="slogan-box" id="sloganBox" value="" />
+
 
         @if(Model.Tasks != null && Model.Tasks.Count > 0)
         {
@@ -44,7 +43,7 @@
                 <div class="task-item">
                     <form asp-action="ToggleComplete" method="post"">
                         <input type="hidden" name="id" value="@task.TaskId" />
-                        <input type="checkbox" onchange="this.form.submit()" @(task.IsCompleted ? "Checked": "") />
+                        <input class="circle" type="checkbox" onchange="this.form.submit()" @(task.IsCompleted ? "Checked": "") />
                     </form>
                     
                     <div class="task-text">
@@ -61,51 +60,165 @@
                             <small>DeadLine: @task.DeadLine.Value.ToShortDateString()</small>
                         }
 
+                        <div class="task-action">
+                            <form asp-action="UpdateTask" method="post">
+                                <a class="edit" asp-action="UpdateTask" asp-route-id="@task.TaskId">✏️</a>
+                            </form>
+
+                            <form asp-action="DeleteTask" method="post">
+                                <input type="hidden" name="id" value="@task.TaskId" />
+                                <button class="delete" type="submit">X</button>
+                            </form>
+                        </div>
+
                     </div>
                     
 
-                    <div class="task-action">
-                        <form asp-action="UpdateTask" method="post">
-                            <a asp-action="UpdateTask" asp-route-id="@task.TaskId">Edit</a>
-                        </form>
-
-                        <form asp-action="DeleteTask" method="post">
-                            <input type="hidden" name="id" value="@task.TaskId" />
-                            <button type="submit">X</button>
-                        </form>
-                    </div>
-                    
+                   
                 </div>
             }
+            <div class="task-footer">
+                @Model.Tasks.Count(t => !t.IsCompleted) items remaining.
+            </div>
         }
         else
         {
-            <p class="empty">No Task Available</p>
+            <h6>Add Your 1st TO DO Task...✏️</h6>
+            <h6>How to Use:</h6>
+            <ul style="list-style-type:none;">
+                <li> ✅ Press Enter to submit Tasks</li>
+                <li> ♾️ Drag to reorder the tasks</li>
+                <li> ✅ Click checkbox to make Priority Task</li>
+                <li> ☠️ Add Date for Deadline </li>
+                <li> ✅ Click on Edit and Delete to make an action</li>
+                <li>🛫 Filters And Import /Export</li>
+            </ul>
         }
 
-        <div class="task-footer">
-            @Model.Tasks.Count(t => !t.IsCompleted) items remaining.
-        </div>       
+       
     </div>
 
 </div>
 
 <div class="side-tabs">
-    <h3>Open</h3>
+    <h3>Filters</h3>
     <a href="?filter=All">All</a>
+    <a href="?filter=Priority"> Priority </a>
+    <a href="?filter=Pending"> Pending </a>
+    <a href="?filter=Completed">Completed</a>
+    <a href="?filter=Trash"> Trash </a>
 
-    @if (Model.Tasks.Count > 0)
-    {
-        <a href="?filter=Priority"> Priority </a>
-        <a href="?filter=Pending"> Pending </a>
-        <a href="?filter=Completed">Completed</a>
-        <a href="#">Finish All</a>
+    <form asp-action="FinishAll" method="post" onsubmit="return confirmAction('Sure want to Complete all Tasks ?')">
+        <button type="submit" class="side-tabs-links">Finish All</button>
+    </form>
 
-        <a href="?filter=Trash"> Trash </a>
-        <a href="#">Delete All</a>
+    <form asp-action="DeleteAll" method="post" onsubmit="return confirmAction('Sure want to Trash all tasks ?')">
+        <button type="submit" class="side-tabs-links">Trash All</button>
+    </form>
 
-        <a href="#">Export</a>
-    }
-    <a href="#">Import</a>
+    <form asp-action="ClearCompleted" method="post" onsubmit="return confirmAction('Sure want to Trash all Completed Tasks ?')">
+        <button type="submit" class="side-tabs-links">Clear Complete</button>
+    </form>
+
+
 </div>
 
+<div class="side-tabs-ei">
+    <h4>Import/Export</h4>
+    <div class="export-box">
+        <button type="button" class="side-tabs-links" onclick="toggleExport()">Export</button>
+        @if (Model.Tasks.Count > 0)
+        {
+            <div id="exportOptions" class="export-options">
+                <form method="post" asp-action="ExportJson">
+                    <button type="submit">> Export JSON</button>
+                </form>
+                <form method="post" asp-action="ExportCsv">
+                    <button type="submit">> Export CSV</button>
+                </form>
+                <form method="post" asp-action="ExportPdf">
+                    <button type="submit">> Export PDF</button>
+                </form>
+            </div>
+        }
+    </div>
+
+    <div class="import-box">
+        <button type="button" class="side-tabs-links" onclick="openFilePicker">Import</button>
+        <form asp-action="ImportTasks" method="post" enctype="multipart/form-data" id="importForm">
+            <input type="file" name="file" id="fileInput" accept=".json, .csv" style="display:none" 
+            onchange="document.getElementById('importForm').submit()"/>
+        </form> 
+    </div>
+    
+</div>
+termi
+
+<!--Javascript-->
+<script>
+    /* Export feature */
+    function toggleExport(){
+        const box = document.getElementById("exportOptions");
+        box.style.display = box.style.display === "block" ? "none" : "block";
+    }
+    document.addEventListener("click", function(e){
+        const box = document.getElementById("exportOptions");
+        if(!e.target.closed(".export-box")){
+            box.style.display = "none";
+        }
+    });
+
+    /* Confirmation yes or no */
+    function confirmAction(message){
+        return confirm(message);
+    }
+
+
+    /*Drag the task */
+    let dragged;
+
+    document.querySelectorAll(".task-item").forEach(item => {
+        item.setAttribute("draggable", true);
+
+        item.addEventListener("dragstart", () => dragged =item);
+        item.addEventListener("dragover", e => e.preventDefault());
+
+        item.addEventListener("drop", function(){
+            this.parentNode.insertBefore(dragged, this);
+        });
+    });
+
+
+    /* Slogan */
+    const sloganInput = document.getElementById("sloganBox");
+
+    //Load from session
+    window.onload = function(){
+        let saved = sessionStorage.getItem("slogan");
+        if(!saved){
+            saved = "Today is Your Day!!!";
+        }
+
+        sloganInput.value = `"${saved}"`;
+    };
+
+    //Save on typing
+    sloganInput.addEventListener("input", function(){
+        let value = this.value;
+
+        //Remove quotes if user tries to typw them
+        value = value.replace(/^"+|"+$/g,"");
+
+        //Save clean ttext
+        sessionStorage.setItem("slogan", value);
+
+        //Reapply quotes visually
+        this.value = `"${value}"`;
+
+        //Keep cursor inside quote (Imp UI fix)
+        setTimeout(()=>{
+            this.setSelectionRange(this.value.length - 1, this.value.length - 1);
+        }, 0);
+    });
+
+</script>
