@@ -15,26 +15,27 @@
         </div>
     </div>
     
-    <form method="post" asp-action="AddTask" class="input-section">
-        
+    <div class="input-section-card">
+        <form method="post" asp-action="AddTask" class="input-section">      
             <input class="title form-control w-50" type="text" name="title" placeholder="Enter Task Ta Da..." required /><br />
+            
             <label class="priority-label">                          
                 Priority
             </label>
             <input type="checkbox" asp-for="IsPriority" name="isPriority" />
-           
+            
             <!--Using html helper tag:  @Html.CheckBoxFor(m => m.IsPriority)-->
             
             <input class="deadline w-25" type="date" name="deadline" /><br /><br />
             <input class="addBtn" type="submit" id="addBtn" value="Add"/>        
-    </form>
+        </form>
+    </div>
+        
     <hr />
 
     <!--Middle Sections-->
-    <div class="main-section">
-        
+    <div class="main-section">        
         <input type="text" class="slogan-box" id="sloganBox" value="" />
-
 
         @if(Model.Tasks != null && Model.Tasks.Count > 0)
         {
@@ -71,10 +72,7 @@
                             </form>
                         </div>
 
-                    </div>
-                    
-
-                   
+                    </div>                 
                 </div>
             }
             <div class="task-footer">
@@ -141,21 +139,37 @@
                 </form>
             </div>
         }
+        else if (TempData["msg"] != null)
+        {
+            <p>@TempData["msg"]</p>
+                
+        }
     </div>
 
     <div class="import-box">
-        <button type="button" class="side-tabs-links" onclick="openFilePicker">Import</button>
+        <button type="button" class="side-tabs-links" onclick="openFilePicker()">Import</button>
         <form asp-action="ImportTasks" method="post" enctype="multipart/form-data" id="importForm">
-            <input type="file" name="file" id="fileInput" accept=".json, .csv" style="display:none" 
+            <input type="file" name="file" id="fileInput" accept=".json,.csv" style="display:none" 
             onchange="document.getElementById('importForm').submit()"/>
         </form> 
+
+        @if(TempData["msg"] != null)
+        {
+            <p>@TempData["msg"]</p>
+        }
     </div>
     
 </div>
-termi
+
 
 <!--Javascript-->
 <script>
+
+    /*Import Feature*/
+    function openFilePicker(){
+        document.getElementById("fileInput").click();
+    }
+    
     /* Export feature */
     function toggleExport(){
         const box = document.getElementById("exportOptions");

@@ -96,9 +96,10 @@ namespace Get_It_Done.Controllers
         [HttpPost]
         public IActionResult DeleteAll()
         {
-            foreach(var task in tasks)
+            var t = tasks.Where(t => !t.IsCompleted);
+            foreach(var task in t)
             {
-                task.IsDeleteAll = true;
+                task.IsDeleted = true;
             }
 
             return RedirectToAction("Index");
@@ -172,9 +173,75 @@ namespace Get_It_Done.Controllers
                             }
                         }
                     }
-                }                    
+                }
+                TempData["msg"] = "Task yet to add to Export...";
                 return File(stream.ToArray(), "application/pdf", "tasks.pdf");
             }
+        }
+
+        [HttpPost]
+        public IActionResult ImportTasks(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return RedirectToAction("Index");
+
+            using (var reader = new StreamReader(file.OpenReadStream()))
+            {
+                var content = reader.ReadToEnd();
+
+                //JSON Import
+                if (file.FileName.EndsWith(".json"))
+                {
+                    var imported = System.Text.Json.JsonSerializer.Deserialize<List<TaskItem>>(content);
+
+                    if(imported != null)
+                    {
+                        foreach(var t in imported)
+                        {
+                            t.TaskId = tasks.Count > 0 ? tasks.Max(x => x.TaskId) + 1 : 1;
+                            tasks.Add(t);
+                        }
+                    }
+                }
+                else if (file.FileName.EndsWith(".csv"))
+                {
+                    var lines = content.Split('\n').Skip(1);    //Skip header
+
+                    DateTime? deadline = null;
+
+                    foreach(var line in lines)
+                    {
+                        if (string.IsNullOrWhiteSpace(line))
+                            continue;
+
+                        var cols = line.Split(',');
+
+                        if (string.IsNullOrWhiteSpace(cols[4]))
+                        {
+                            DateTime temp;
+                            if (DateTime.TryParse(cols[4].Trim(), out temp))
+                            {
+                                deadline = temp;
+                            }
+                        }
+
+
+                        var task = new TaskItem
+                        {
+                            TaskId = tasks.Count > 0 ? tasks.Max(x => x.TaskId) + 1 : 1,
+                            Task = cols[1],
+                            IsCompleted = bool.Parse(cols[2]),
+                            IsPriority = bool.Parse(cols[3]),
+                            DeadLine = deadline
+                        };   
+
+                        tasks.Add(task);
+                    }
+                }
+            }
+            //TempData["msg"] = "Task Imported Successfully";
+
+            return RedirectToAction("Index");
         }
     }
 }
